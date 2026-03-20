@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnLogout"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_button_secondary"
+            android:contentDescription="Logout"
+            android:src="@android:drawable/ic_lock_power_off" />
+
+        <Space android:layout_width="8dp" android:layout_height="1dp" />
+
+        <ImageButton
+            android:id="@+id/btnFriends"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_button_secondary"
+            android:contentDescription="Friends"
+            android:src="@android:drawable/ic_menu_myplaces" />
+
+        <Space android:layout_width="8dp" android:layout_height="1dp" />
+
+        <ImageButton
+            android:id="@+id/btnProfile"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_button_secondary"
+            android:contentDescription="Profile"
+            android:src="@android:drawable/ic_menu_manage" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/bg_avatar"
+        android:gravity="center"
+        android:text="LOGO"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnCreateMatch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/bg_button_secondary"
+        android:text="Create Match"
+        android:textColor="@color/text_primary" />
+
+    <Button
+        android:id="@+id/btnFindMatch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_button_secondary"
+        android:text="Find Match"
+        android:textColor="@color/text_primary" />
+
+    <Button
+        android:id="@+id/btnHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_button_secondary"
+        android:text="Historial"
+        android:textColor="@color/text_primary" />
+</LinearLayout>
