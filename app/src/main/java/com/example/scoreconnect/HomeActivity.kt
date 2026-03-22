@@ -21,7 +21,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnHistory).setOnClickListener {
-            //startActivity(Intent(this, HistoryActivity::class.java))
+            startActivity(Intent(this, HistoryActivity::class.java))
         }
 
         findViewById<ImageButton>(R.id.btnLogout).setOnClickListener {
