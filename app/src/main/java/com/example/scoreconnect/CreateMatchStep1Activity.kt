@@ -1,4 +1,4 @@
-package com.scoreconnect.prototype
+package com.example.scoreconnect
 
 import android.content.Intent
 import android.os.Bundle
@@ -17,7 +17,7 @@ class CreateMatchStep1Activity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnContinue).setOnClickListener {
-         //   startActivity(Intent(this, CreateMatchStep2Activity::class.java))
+            startActivity(Intent(this, CreateMatchStep2Activity::class.java))
         }
     }
 }

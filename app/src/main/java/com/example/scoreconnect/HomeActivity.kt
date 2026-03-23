@@ -13,11 +13,11 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
 
         findViewById<Button>(R.id.btnCreateMatch).setOnClickListener {
-            //startActivity(Intent(this, CreateMatchStep1Activity::class.java))
+            startActivity(Intent(this, CreateMatchStep1Activity::class.java))
         }
 
         findViewById<Button>(R.id.btnFindMatch).setOnClickListener {
-            //startActivity(Intent(this, FindMatchFiltersActivity::class.java))
+            //startActivity(Intent(this, FikhkndMatchFiltersActivity::class.java))
         }
 
         findViewById<Button>(R.id.btnHistory).setOnClickListener {
