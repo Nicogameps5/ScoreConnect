@@ -11,6 +11,8 @@
         <activity android:name=".HomeActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".HistoryActivity"/>
+        <activity android:name=".CreateMatchStep1Activity"/>
+        <activity android:name=".CreateMatchStep2Activity"/>
         <activity
             android:name=".LoginActivity"
             android:exported="true">
