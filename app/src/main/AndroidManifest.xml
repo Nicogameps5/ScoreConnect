@@ -13,6 +13,10 @@
         <activity android:name=".HistoryActivity"/>
         <activity android:name=".CreateMatchStep1Activity"/>
         <activity android:name=".CreateMatchStep2Activity"/>
+        <activity android:name=".WaitingPlayersActivity" />
+        <activity android:name=".FindMatchResultsActivity" />
+        <activity android:name=".FindMatchFiltersActivity" />
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
