@@ -29,7 +29,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         findViewById<ImageButton>(R.id.btnFriends).setOnClickListener {
-            //startActivity(Intent(this, FriendsActivity::class.java))
+            startActivity(Intent(this, FriendsActivity::class.java))
         }
 
         findViewById<ImageButton>(R.id.btnProfile).setOnClickListener {

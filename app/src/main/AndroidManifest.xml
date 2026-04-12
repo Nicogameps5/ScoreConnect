@@ -16,6 +16,8 @@
         <activity android:name=".WaitingPlayersActivity" />
         <activity android:name=".FindMatchResultsActivity" />
         <activity android:name=".FindMatchFiltersActivity" />
+        <activity android:name=".FriendsActivity" />
+        <activity android:name=".UserProfileActivity" />
 
         <activity
             android:name=".LoginActivity"
