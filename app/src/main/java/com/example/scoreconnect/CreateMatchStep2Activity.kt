@@ -42,7 +42,7 @@ class CreateMatchStep2Activity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnContinue).setOnClickListener {
-            //startActivity(Intent(this, WaitingPlayersActivity::class.java))
+            startActivity(Intent(this, WaitingPlayersActivity::class.java))
         }
     }
 }

@@ -17,7 +17,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnFindMatch).setOnClickListener {
-            //startActivity(Intent(this, FikhkndMatchFiltersActivity::class.java))
+            startActivity(Intent(this, FindMatchFiltersActivity::class.java))
         }
 
         findViewById<Button>(R.id.btnHistory).setOnClickListener {
