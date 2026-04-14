@@ -2,7 +2,10 @@ package com.example.scoreconnect
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
@@ -10,46 +13,53 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
 
-        // Si ya está logueado → saltar al Home
         auth = FirebaseAuth.getInstance()
+
         if (auth.currentUser != null) {
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
         }
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val userField = findViewById<EditText>(R.id.etUsername)
+        auth = FirebaseAuth.getInstance()
+
+        val emailField = findViewById<EditText>(R.id.etEmail)
         val passwordField = findViewById<EditText>(R.id.etPassword)
         val loginButton = findViewById<Button>(R.id.btnLogin)
         val signUpButton = findViewById<Button>(R.id.btnSignUp)
         val forgotPassword = findViewById<TextView>(R.id.tvForgotPassword)
 
         loginButton.setOnClickListener {
-            val email = userField.text.toString().trim()
-            val password = passwordField.text.toString().trim()
+            val email = emailField.text.toString().trim()
+            val password = passwordField.text.toString()
 
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Enter email and password", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            loginButton.isEnabled = false
+
             auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, HomeActivity::class.java))
-                        finish()
-                    } else {
-                        Toast.makeText(
-                            this,
-                            "Error: ${task.exception?.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Welcome back", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, HomeActivity::class.java))
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    loginButton.isEnabled = true
+                    Toast.makeText(
+                        this,
+                        e.message ?: "Login error",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
         }
 
@@ -57,9 +67,8 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
-        // 🔁 RECUPERAR PASSWORD
         forgotPassword.setOnClickListener {
-            val email = userField.text.toString().trim()
+            val email = emailField.text.toString().trim()
 
             if (email.isEmpty()) {
                 Toast.makeText(this, "Enter your email first", Toast.LENGTH_SHORT).show()
@@ -70,8 +79,12 @@ class LoginActivity : AppCompatActivity() {
                 .addOnSuccessListener {
                     Toast.makeText(this, "Recovery email sent", Toast.LENGTH_SHORT).show()
                 }
-                .addOnFailureListener {
-                    Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_LONG).show()
+                .addOnFailureListener { e ->
+                    Toast.makeText(
+                        this,
+                        e.message ?: "Could not send recovery email",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
         }
     }

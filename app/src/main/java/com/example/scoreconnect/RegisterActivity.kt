@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.example.scoreconnect.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -19,46 +20,72 @@ class RegisterActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        val emailField = findViewById<EditText>(R.id.etEmail)
-        val passwordField = findViewById<EditText>(R.id.etPassword)
-        val registerButton = findViewById<Button>(R.id.btnRegister)
+        val emailField = findViewById<EditText>(R.id.etRegisterEmail)
+        val usernameField = findViewById<EditText>(R.id.etRegisterUsername)
+        val descriptionField = findViewById<EditText>(R.id.etRegisterDescription)
+        val passwordField = findViewById<EditText>(R.id.etRegisterPassword)
+        val createAccountButton = findViewById<Button>(R.id.btnCreateAccount)
+        val backToLoginButton = findViewById<Button>(R.id.btnBackToLogin)
 
-        registerButton.setOnClickListener {
+        createAccountButton.setOnClickListener {
             val email = emailField.text.toString().trim()
-            val password = passwordField.text.toString().trim()
+            val username = usernameField.text.toString().trim()
+            val description = descriptionField.text.toString().trim()
+            val password = passwordField.text.toString()
 
-            if (email.isEmpty() || password.length < 6) {
-                Toast.makeText(this, "Email and password (min 6 chars)", Toast.LENGTH_SHORT).show()
+            if (email.isEmpty() || username.isEmpty() || description.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Complete all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            createAccountButton.isEnabled = false
+
             auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
+                .addOnSuccessListener {
+                    val uid = auth.currentUser?.uid
 
-                        val userId = auth.currentUser!!.uid
-
-                        // Guardar usuario en Firestore
-                        val userMap = hashMapOf(
-                            "email" to email
-                        )
-
-                        db.collection("users").document(userId)
-                            .set(userMap)
-
-                        Toast.makeText(this, "User created", Toast.LENGTH_SHORT).show()
-
-                        startActivity(Intent(this, HomeActivity::class.java))
-                        finish()
-
-                    } else {
-                        Toast.makeText(
-                            this,
-                            "Error: ${task.exception?.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
+                    if (uid == null) {
+                        createAccountButton.isEnabled = true
+                        Toast.makeText(this, "Could not get user ID", Toast.LENGTH_SHORT).show()
+                        return@addOnSuccessListener
                     }
+
+                    val user = User(
+                        uid = uid,
+                        email = email,
+                        username = username,
+                        description = description
+                    )
+
+                    db.collection("users")
+                        .document(uid)
+                        .set(user)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Account created successfully", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this, HomeActivity::class.java))
+                            finishAffinity()
+                        }
+                        .addOnFailureListener { e ->
+                            createAccountButton.isEnabled = true
+                            Toast.makeText(
+                                this,
+                                "User created, but profile could not be saved: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                 }
+                .addOnFailureListener { e ->
+                    createAccountButton.isEnabled = true
+                    Toast.makeText(
+                        this,
+                        e.message ?: "Error creating account",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+        }
+
+        backToLoginButton.setOnClickListener {
+            finish()
         }
     }
 }
