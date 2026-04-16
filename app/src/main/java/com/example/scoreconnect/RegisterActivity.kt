@@ -54,7 +54,8 @@ class RegisterActivity : AppCompatActivity() {
                         uid = uid,
                         email = email,
                         username = username,
-                        description = description
+                        description = description,
+                        sports = emptyList()
                     )
 
                     db.collection("users")
