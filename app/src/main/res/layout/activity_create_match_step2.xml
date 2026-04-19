@@ -15,63 +15,120 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@drawable/bg_button_secondary"
-            android:contentDescription="Back"
             android:src="@android:drawable/ic_media_previous" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:text="Create Match"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"/>
 
+        <!-- SPORT -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
             android:text="Select sport"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginTop="18dp"/>
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="@drawable/bg_chip" android:paddingHorizontal="14dp" android:paddingVertical="10dp" android:text="⚽ Football" />
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="@drawable/bg_chip" android:paddingHorizontal="14dp" android:paddingVertical="10dp" android:text="🏀 Basketball" />
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="@drawable/bg_chip" android:paddingHorizontal="14dp" android:paddingVertical="10dp" android:text="🏐 Volleyball" />
+        <TextView
+            android:id="@+id/chipFootball"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚽ Football"
+            android:background="@drawable/bg_chip"
+            android:padding="12dp"
+            android:layout_marginTop="10dp"/>
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="Match level" android:textStyle="bold" />
+        <TextView
+            android:id="@+id/chipBasketball"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🏀 Basketball"
+            android:background="@drawable/bg_chip"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"/>
+
+        <!-- LEVEL -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Match level"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/chipBeginner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Beginner"
+            android:background="@drawable/bg_chip"
+            android:padding="12dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/chipIntermediate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Intermediate"
+            android:background="@drawable/bg_chip"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"/>
+
+        <!-- MISSING -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Missing people"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:orientation="horizontal">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_chip" android:paddingHorizontal="14dp" android:paddingVertical="10dp" android:text="Beginner" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="@drawable/bg_chip" android:paddingHorizontal="14dp" android:paddingVertical="10dp" android:text="Intermediate" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="@drawable/bg_chip" android:paddingHorizontal="14dp" android:paddingVertical="10dp" android:text="Advanced" />
+
+            <Button
+                android:id="@+id/btnDecrease"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="-"/>
+
+            <TextView
+                android:id="@+id/tvMissingPeopleCount"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="20sp"/>
+
+            <Button
+                android:id="@+id/btnIncrease"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="+"/>
         </LinearLayout>
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="Missing people" android:textStyle="bold" />
-
-        <LinearLayout
+        <!-- POSITIONS DYNAMIC -->
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-            <Button android:id="@+id/btnDecrease" android:layout_width="50dp" android:layout_height="50dp" android:background="@drawable/bg_button_secondary" android:text="-" android:textSize="24sp" />
-            <TextView android:id="@+id/tvMissingPeopleCount" android:layout_width="60dp" android:layout_height="wrap_content" android:gravity="center" android:textSize="24sp" android:textStyle="bold" />
-            <Button android:id="@+id/btnIncrease" android:layout_width="50dp" android:layout_height="50dp" android:background="@drawable/bg_button_secondary" android:text="+" android:textSize="24sp" />
-        </LinearLayout>
+            android:text="Positions needed"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"/>
 
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:background="@drawable/bg_chip" android:paddingHorizontal="14dp" android:paddingVertical="10dp" android:text="1. Goalkeeper" />
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="@drawable/bg_chip" android:paddingHorizontal="14dp" android:paddingVertical="10dp" android:text="2. Central" />
+        <LinearLayout
+            android:id="@+id/positionsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
 
         <Button
             android:id="@+id/btnContinue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/bg_button_primary"
-            android:text="Continue"
-            android:textColor="@color/white" />
+            android:text="Create Match"
+            android:layout_marginTop="24dp"/>
     </LinearLayout>
 </ScrollView>
