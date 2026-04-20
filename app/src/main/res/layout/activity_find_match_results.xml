@@ -8,14 +8,47 @@
 
     <include layout="@layout/view_page_header" />
 
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="Find Match" android:textSize="24sp" android:textStyle="bold" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Match Results"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvResultsSubtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_card"
+        android:padding="14dp"
+        android:text="Searching..."
+        android:textColor="@color/text_primary" />
+
+    <TextView
+        android:id="@+id/tvEmptyMatches"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_card"
+        android:padding="14dp"
+        android:text="No matches found."
+        android:textColor="@color/text_primary"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMatches"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="12dp"
         android:layout_weight="1" />
 
-    <Button android:id="@+id/btnStopSearching" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/bg_button_secondary" android:text="Stop searching" android:textColor="@color/text_primary" />
+    <Button
+        android:id="@+id/btnStopSearching"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_button_secondary"
+        android:text="Back to filters"
+        android:textColor="@color/text_primary" />
 </LinearLayout>

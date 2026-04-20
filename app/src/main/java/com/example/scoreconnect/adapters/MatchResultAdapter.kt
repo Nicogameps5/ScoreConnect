@@ -10,9 +10,15 @@ import com.example.scoreconnect.R
 import com.example.scoreconnect.model.MatchResult
 
 class MatchResultAdapter(
-    private val items: List<MatchResult>,
+    private val items: MutableList<MatchResult>,
     private val onJoin: (MatchResult) -> Unit
 ) : RecyclerView.Adapter<MatchResultAdapter.MatchViewHolder>() {
+
+    fun updateItems(newItems: List<MatchResult>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -29,19 +35,19 @@ class MatchResultAdapter(
     inner class MatchViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val sport: TextView = itemView.findViewById(R.id.tvSport)
         private val level: TextView = itemView.findViewById(R.id.tvLevel)
-        private val price: TextView = itemView.findViewById(R.id.tvPrice)
         private val date: TextView = itemView.findViewById(R.id.tvDate)
-        private val position: TextView = itemView.findViewById(R.id.tvPositionNeeded)
         private val location: TextView = itemView.findViewById(R.id.tvLocation)
+        private val positionNeeded: TextView = itemView.findViewById(R.id.tvPositionNeeded)
+        private val occupation: TextView = itemView.findViewById(R.id.tvOccupation)
         private val joinButton: Button = itemView.findViewById(R.id.btnJoinMatch)
 
         fun bind(match: MatchResult) {
             sport.text = match.sport
             level.text = "Level: ${match.level}"
-            price.text = "Price: ${match.price}"
             date.text = "Date: ${match.date}"
-            position.text = "Position needed: ${match.positionNeeded}"
-            location.text = match.location
+            location.text = "Location: ${match.location}"
+            positionNeeded.text = "Needed positions: ${match.positionNeeded}"
+            occupation.text = "Occupation: ${match.occupation}"
             joinButton.setOnClickListener { onJoin(match) }
         }
     }
