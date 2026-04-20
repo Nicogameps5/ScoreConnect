@@ -15,6 +15,7 @@ class FindMatchResultsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_find_match_results)
+        NavigationUtils.setupHomeButton(this)
 
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
             finish()

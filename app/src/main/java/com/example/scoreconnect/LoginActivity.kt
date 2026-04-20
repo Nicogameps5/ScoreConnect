@@ -11,24 +11,22 @@ import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
-
-    override fun onStart() {
-        super.onStart()
-
-        auth = FirebaseAuth.getInstance()
-
-        if (auth.currentUser != null) {
-            startActivity(Intent(this, HomeActivity::class.java))
-            finish()
-        }
+    companion object {
+        private var sessionClearedForThisProcess = false
     }
+
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         auth = FirebaseAuth.getInstance()
+
+        if (!sessionClearedForThisProcess) {
+            auth.signOut()
+            sessionClearedForThisProcess = true
+        }
 
         val emailField = findViewById<EditText>(R.id.etEmail)
         val passwordField = findViewById<EditText>(R.id.etPassword)

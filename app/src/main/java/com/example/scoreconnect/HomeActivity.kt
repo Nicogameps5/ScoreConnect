@@ -28,7 +28,7 @@ class HomeActivity : AppCompatActivity() {
         findViewById<ImageButton>(R.id.btnLogout).setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            finishAffinity()
         }
 
         findViewById<ImageButton>(R.id.btnFriends).setOnClickListener {

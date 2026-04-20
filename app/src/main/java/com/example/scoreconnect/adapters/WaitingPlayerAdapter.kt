@@ -10,13 +10,20 @@ import com.example.scoreconnect.R
 import com.example.scoreconnect.model.WaitingPlayer
 
 class WaitingPlayerAdapter(
-    private val items: List<WaitingPlayer>,
+    private val items: MutableList<WaitingPlayer>,
     private val onAccept: (WaitingPlayer) -> Unit,
     private val onReject: (WaitingPlayer) -> Unit
 ) : RecyclerView.Adapter<WaitingPlayerAdapter.WaitingPlayerViewHolder>() {
 
+    fun updateItems(newItems: List<WaitingPlayer>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WaitingPlayerViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_waiting_player, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_waiting_player, parent, false)
         return WaitingPlayerViewHolder(view)
     }
 

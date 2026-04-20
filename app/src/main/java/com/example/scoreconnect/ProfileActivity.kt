@@ -40,6 +40,7 @@ class ProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
+        NavigationUtils.setupHomeButton(this)
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()

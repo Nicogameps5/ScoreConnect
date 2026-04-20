@@ -21,7 +21,9 @@
             android:contentDescription="Logout"
             android:src="@android:drawable/ic_lock_power_off" />
 
-        <Space android:layout_width="8dp" android:layout_height="1dp" />
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
 
         <ImageButton
             android:id="@+id/btnFriends"
@@ -31,7 +33,9 @@
             android:contentDescription="Friends"
             android:src="@android:drawable/ic_menu_myplaces" />
 
-        <Space android:layout_width="8dp" android:layout_height="1dp" />
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
 
         <ImageButton
             android:id="@+id/btnProfile"
@@ -46,11 +50,29 @@
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginTop="36dp"
-        android:background="@drawable/bg_avatar"
+        android:background="@drawable/bg_home_logo"
         android:gravity="center"
-        android:text="LOGO"
-        android:textSize="24sp"
+        android:text="SC"
+        android:textColor="@color/white"
+        android:textSize="34sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="ScoreConnect"
+        android:textColor="@color/text_primary"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Play. Connect. Repeat."
+        android:textColor="@color/text_secondary"
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/btnCreateMatch"

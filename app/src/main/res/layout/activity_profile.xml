@@ -30,6 +30,19 @@
                 android:layout_weight="1" />
 
             <ImageButton
+                android:id="@+id/btnHomeTop"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_button_secondary"
+                android:contentDescription="Home"
+                android:padding="10dp"
+                android:src="@drawable/ic_home" />
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="1dp" />
+
+            <ImageButton
                 android:id="@+id/btnSettings"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
