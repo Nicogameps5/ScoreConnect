@@ -10,61 +10,60 @@
         android:orientation="vertical"
         android:padding="20dp">
 
+        <!-- HEADER -->
         <include layout="@layout/view_page_header" />
 
+        <!-- TITULO -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:text="Create Match"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
 
+        <!-- LOCATION -->
         <EditText
             android:id="@+id/etLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_input"
             android:hint="Type a location"
-            android:padding="14dp" />
+            android:background="@drawable/bg_input"
+            android:padding="14dp"
+            android:layout_marginTop="20dp" />
 
+        <!-- MAP PREVIEW (placeholder por ahora) -->
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_card"
+            android:layout_height="160dp"
+            android:text="Map preview (coming later)"
             android:gravity="center"
-            android:text="Map preview"
+            android:background="@drawable/bg_card"
             android:textColor="@color/text_secondary"
-            android:textSize="18sp" />
+            android:textSize="16sp"
+            android:layout_marginTop="14dp" />
 
+        <!-- DATE + TIME PICKER -->
         <EditText
             android:id="@+id/etDateTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:hint="Select date and time"
+            android:focusable="false"
+            android:clickable="true"
             android:background="@drawable/bg_input"
-            android:hint="Day/Month - Hour:Minutes"
-            android:padding="14dp" />
+            android:padding="14dp"
+            android:layout_marginTop="14dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_card"
-            android:gravity="center"
-            android:text="Calendar preview"
-            android:textColor="@color/text_secondary"
-            android:textSize="18sp" />
-
+        <!-- BOTON CONTINUE -->
         <Button
             android:id="@+id/btnContinue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_button_primary"
             android:text="Continue"
-            android:textColor="@color/white" />
+            android:background="@drawable/bg_button_primary"
+            android:textColor="@color/white"
+            android:layout_marginTop="20dp" />
+
     </LinearLayout>
 </ScrollView>
