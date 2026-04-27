@@ -2,30 +2,38 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@android:drawable/ic_menu_compass"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.ScoreConnectPrototype">
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".HistoryActivity"/>
-        <activity android:name=".CreateMatchStep1Activity"/>
-        <activity android:name=".CreateMatchStep2Activity"/>
-        <activity android:name=".WaitingPlayersActivity" />
-        <activity android:name=".FindMatchResultsActivity" />
-        <activity android:name=".FindMatchFiltersActivity" />
-        <activity android:name=".FriendsActivity" />
-        <activity android:name=".UserProfileActivity" />
-        <activity android:name=".RegisterActivity" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
+        <activity android:name=".HomeActivity" android:exported="false" />
+        <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".HistoryActivity" android:exported="false" />
+        <activity android:name=".CreateMatchStep1Activity" android:exported="false" />
+        <activity android:name=".CreateMatchStep2Activity" android:exported="false" />
+        <activity android:name=".WaitingPlayersActivity" android:exported="false" />
+        <activity android:name=".FindMatchResultsActivity" android:exported="false" />
+        <activity android:name=".FindMatchFiltersActivity" android:exported="false" />
+        <activity android:name=".FriendsActivity" android:exported="false" />
+        <activity android:name=".UserProfileActivity" android:exported="false" />
+        <activity android:name=".RegisterActivity" android:exported="false" />
 
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
