@@ -15,11 +15,20 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_marginTop="48dp"
-            android:background="@drawable/bg_avatar"
+            android:background="@drawable/bg_home_logo"
             android:gravity="center"
-            android:text="LOGO"
+            android:text="SC"
+            android:textColor="@color/white"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="ScoreConnect"
             android:textColor="@color/text_primary"
-            android:textSize="22sp"
+            android:textSize="26sp"
             android:textStyle="bold" />
 
         <LinearLayout

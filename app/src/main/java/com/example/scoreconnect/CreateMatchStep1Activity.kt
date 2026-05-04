@@ -67,7 +67,7 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
         googleMap?.setOnMapClickListener { latLng ->
             googleMap?.clear()
 
-            googleMap?.addMarker(MarkerOptions().position(latLng).title("Miejsce meczu"))
+            googleMap?.addMarker(MarkerOptions().position(latLng).title("Match venue"))
 
             googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
             getAddressFromCoordinates(latLng)
@@ -85,12 +85,12 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
 
                 etLocation.setText(addressText)
             } else {
-                Toast.makeText(this, "Nie znaleziono adresu dla tego miejsca", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No address found for this place", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             e.printStackTrace()
             etLocation.setText("${latLng.latitude}, ${latLng.longitude}")
-            Toast.makeText(this, "Błąd pobierania adresu", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error getting address", Toast.LENGTH_SHORT).show()
         }
     }
 

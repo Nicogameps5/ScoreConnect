@@ -14,7 +14,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scoreconnect.model.CreatedMatch
-import com.example.scoreconnect.model.WaitingPlayer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -239,7 +238,6 @@ class CreateMatchStep2Activity : AppCompatActivity() {
 
         val missingPeople = positions.values.sum()
         val matchRef = db.collection("matches").document()
-        val pendingRequests = buildMockRequests(positions)
 
         val match = CreatedMatch(
             id = matchRef.id,
@@ -250,23 +248,12 @@ class CreateMatchStep2Activity : AppCompatActivity() {
             level = level,
             totalPlayers = missingPeople + 1,
             currentPlayers = 1,
-            pendingRequests = pendingRequests.size,
+            pendingRequests = 0,
             createdAt = System.currentTimeMillis(),
             positions = positions.mapValues { it.value.toLong() }
         )
 
-        val batch = db.batch()
-        batch.set(matchRef, match)
-
-        pendingRequests.forEach { request ->
-            val requestRef = matchRef.collection("requests").document()
-            batch.set(
-                requestRef,
-                request.copy(id = requestRef.id)
-            )
-        }
-
-        batch.commit()
+        matchRef.set(match)
             .addOnSuccessListener {
                 Toast.makeText(this, "Match created successfully", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, HistoryActivity::class.java))
@@ -282,26 +269,6 @@ class CreateMatchStep2Activity : AppCompatActivity() {
             }
     }
 
-    private fun buildMockRequests(positionCounts: Map<String, Int>): List<WaitingPlayer> {
-        val names = listOf("Ruben", "Sonia", "Carlos", "Lucia", "Adrian", "Marta", "Javier", "Elena")
-        val requests = mutableListOf<WaitingPlayer>()
-        var index = 0
-
-        positionCounts.forEach { (position, count) ->
-            repeat(count) {
-                requests.add(
-                    WaitingPlayer(
-                        name = names[index % names.size],
-                        position = position,
-                        status = "pending"
-                    )
-                )
-                index++
-            }
-        }
-
-        return requests
-    }
 
     private fun Int.dp(): Int {
         return (this * resources.displayMetrics.density).toInt()
