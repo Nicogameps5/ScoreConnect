@@ -31,7 +31,6 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
         etLocation = findViewById(R.id.etLocation)
         etDateTime = findViewById(R.id.etDateTime)
 
-        // Map initialization
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -40,7 +39,6 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
             finish()
         }
 
-        // 👉 CLICK EN FECHA → abre calendario
         etDateTime.setOnClickListener {
             showDatePicker()
         }
@@ -61,13 +59,11 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    // Map configuration
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         val defaultLocation = LatLng(28.1235, -15.4362)
         googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12f))
 
-        // Clicking on map
         googleMap?.setOnMapClickListener { latLng ->
             googleMap?.clear()
 
@@ -78,32 +74,26 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    // Getting location from point
     private fun getAddressFromCoordinates(latLng: LatLng) {
         val geocoder = Geocoder(this, Locale.getDefault())
         try {
-            // Pobierz maksymalnie 1 wynik dopasowany do współrzędnych
             val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
 
             if (!addresses.isNullOrEmpty()) {
                 val address = addresses[0]
-                // Wyciągnij pełny adres (np. "ul. Prosta 5, 00-001 Warszawa")
                 val addressText = address.getAddressLine(0)
 
-                // Ustaw tekst w polu lokalizacji
                 etLocation.setText(addressText)
             } else {
                 Toast.makeText(this, "Nie znaleziono adresu dla tego miejsca", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            // Zabezpieczenie: jeśli Geocoder zawiedzie, wstaw przynajmniej współrzędne
             etLocation.setText("${latLng.latitude}, ${latLng.longitude}")
             Toast.makeText(this, "Błąd pobierania adresu", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // 📅 SELECTOR DE FECHA
     private fun showDatePicker() {
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
@@ -117,18 +107,15 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
                 calendar.set(Calendar.MONTH, selectedMonth)
                 calendar.set(Calendar.DAY_OF_MONTH, selectedDay)
 
-                // 👉 después de elegir fecha → elegir hora
                 showTimePicker()
             },
             year, month, day
         )
 
-        // ❌ bloquear fechas pasadas
         datePicker.datePicker.minDate = System.currentTimeMillis()
         datePicker.show()
     }
 
-    // ⏰ SELECTOR DE HORA
     private fun showTimePicker() {
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         val minute = calendar.get(Calendar.MINUTE)
@@ -150,7 +137,6 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
         timePicker.show()
     }
 
-    // 🧾 FORMATEAR FECHA FINAL
     private fun updateDateTimeField() {
         val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         etDateTime.setText(format.format(calendar.time))
