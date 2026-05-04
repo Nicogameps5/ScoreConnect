@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_input"
-                android:hint="email"
+                android:hint="Email *"
                 android:inputType="textEmailAddress"
                 android:padding="14dp" />
 
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/bg_input"
-                android:hint="password"
+                android:hint="Password *"
                 android:inputType="textPassword"
                 android:padding="14dp" />
 
@@ -75,6 +75,14 @@
                 android:text="Forgot my password"
                 android:textColor="@color/text_secondary"
                 android:textStyle="italic" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="* Required fields"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
 
             <Button
                 android:id="@+id/btnLogin"

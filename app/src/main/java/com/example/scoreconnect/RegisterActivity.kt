@@ -33,8 +33,35 @@ class RegisterActivity : AppCompatActivity() {
             val description = descriptionField.text.toString().trim()
             val password = passwordField.text.toString()
 
-            if (email.isEmpty() || username.isEmpty() || description.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Complete all fields", Toast.LENGTH_SHORT).show()
+            emailField.error = null
+            usernameField.error = null
+            descriptionField.error = null
+            passwordField.error = null
+
+            var hasError = false
+
+            if (email.isEmpty()) {
+                emailField.error = "Email is required"
+                hasError = true
+            }
+
+            if (username.isEmpty()) {
+                usernameField.error = "Username is required"
+                hasError = true
+            }
+
+            if (description.isEmpty()) {
+                descriptionField.error = "Description is required"
+                hasError = true
+            }
+
+            if (password.isEmpty()) {
+                passwordField.error = "Password is required"
+                hasError = true
+            }
+
+            if (hasError) {
+                Toast.makeText(this, "Complete the required fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
