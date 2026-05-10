@@ -48,6 +48,60 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_input" />
 
+        <!-- New Distance Filter -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Max Distance:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvRadiusValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="50 km"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/seekBarRadius"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:max="100"
+            android:progress="50" />
+        <!-- End of Distance Filter -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Search near (optional - click on map):"
+            android:textStyle="bold" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/filterMapFragment"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:id="@+id/tvSelectedLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Using device location (default)"
+            android:textSize="12sp"
+            android:textColor="#666666" />
+
         <Button
             android:id="@+id/btnStartSearching"
             android:layout_width="match_parent"

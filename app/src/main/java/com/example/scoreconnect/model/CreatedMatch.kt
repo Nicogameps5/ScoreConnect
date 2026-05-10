@@ -4,6 +4,8 @@ data class CreatedMatch(
     val id: String = "",
     val ownerId: String = "",
     val location: String = "",
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
     val dateTime: String = "",
     val sport: String = "",
     val level: String = "",

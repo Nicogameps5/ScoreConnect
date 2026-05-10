@@ -4,14 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.scoreconnect.model.CreatedMatch
 import com.google.firebase.auth.FirebaseAuth
@@ -30,21 +23,8 @@ class CreateMatchStep2Activity : AppCompatActivity() {
 
     private val selectedPositions = mutableMapOf<String, Int>()
 
-    private val availableSports = listOf(
-        "Football",
-        "Basketball",
-        "Padel",
-        "Tennis",
-        "Volleyball",
-        "Running"
-    )
-
-    private val levels = listOf(
-        "Beginner",
-        "Intermediate",
-        "Advanced"
-    )
-
+    private val availableSports = listOf("Football", "Basketball", "Padel", "Tennis", "Volleyball", "Running")
+    private val levels = listOf("Beginner", "Intermediate", "Advanced")
     private val sportPositions = mapOf(
         "Football" to listOf("Goalkeeper", "Defender", "Midfielder", "Forward"),
         "Basketball" to listOf("Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"),
@@ -61,194 +41,134 @@ class CreateMatchStep2Activity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        NavigationUtils.setupHomeButton(this)
-
         spinnerSport = findViewById(R.id.spinnerSport)
         spinnerLevel = findViewById(R.id.spinnerLevel)
         layoutPositionsContainer = findViewById(R.id.layoutPositionsContainer)
         tvMissingPeopleCount = findViewById(R.id.tvMissingPeopleCount)
         createButton = findViewById(R.id.btnContinue)
 
-        val sportAdapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            availableSports
-        )
-        sportAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerSport.adapter = sportAdapter
-
-        val levelAdapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_item,
-            levels
-        )
-        levelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerLevel.adapter = levelAdapter
+        // Setup Adapters
+        spinnerSport.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, availableSports).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        spinnerLevel.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, levels).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
 
         spinnerSport.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
-                val selectedSport = availableSports[position]
-                renderPositionSelectors(selectedSport)
+                renderPositionSelectors(availableSports[position])
             }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
-            finish()
-        }
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
 
         createButton.setOnClickListener {
             val location = intent.getStringExtra("location").orEmpty()
             val dateTime = intent.getStringExtra("dateTime").orEmpty()
+
+            // Retrieve coordinates from Intent
+            val lat = intent.getDoubleExtra("latitude", 0.0)
+            val lng = intent.getDoubleExtra("longitude", 0.0)
+
             val selectedSport = spinnerSport.selectedItem?.toString().orEmpty()
             val selectedLevel = spinnerLevel.selectedItem?.toString().orEmpty()
-
             val filteredPositions = selectedPositions.filterValues { it > 0 }
             val missingPeople = filteredPositions.values.sum()
 
-            if (location.isEmpty() || dateTime.isEmpty()) {
-                Toast.makeText(this, "Location or date missing", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (selectedSport.isEmpty() || selectedLevel.isEmpty()) {
-                Toast.makeText(this, "Select sport and level", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
             if (missingPeople <= 0) {
-                Toast.makeText(this, "Select at least one needed position", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Add at least one missing player", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            saveMatch(
-                location = location,
-                dateTime = dateTime,
-                sport = selectedSport,
-                level = selectedLevel,
-                positions = filteredPositions,
-                createButton = createButton
-            )
+            saveMatch(location, lat, lng, dateTime, selectedSport, selectedLevel, filteredPositions)
         }
     }
 
     private fun renderPositionSelectors(sport: String) {
         layoutPositionsContainer.removeAllViews()
         selectedPositions.clear()
-
         val positions = sportPositions[sport] ?: listOf("Player")
 
         positions.forEach { positionName ->
             selectedPositions[positionName] = 0
-
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setBackgroundResource(R.drawable.bg_card)
                 setPadding(14.dp(), 14.dp(), 14.dp(), 14.dp())
-
-                val params = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
+                val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 params.bottomMargin = 10.dp()
                 layoutParams = params
             }
 
             val label = TextView(this).apply {
                 text = positionName
-                textSize = 16f
-                layoutParams = LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
-            }
-
-            val minusButton = Button(this).apply {
-                text = "-"
-                setBackgroundResource(R.drawable.bg_button_secondary)
-                layoutParams = LinearLayout.LayoutParams(46.dp(), 46.dp())
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             }
 
             val countText = TextView(this).apply {
                 text = "0"
-                textSize = 20f
+                textSize = 18f
                 gravity = Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(52.dp(), ViewGroup.LayoutParams.WRAP_CONTENT)
+                layoutParams = LinearLayout.LayoutParams(50.dp(), ViewGroup.LayoutParams.WRAP_CONTENT)
             }
 
-            val plusButton = Button(this).apply {
-                text = "+"
-                setBackgroundResource(R.drawable.bg_button_secondary)
-                layoutParams = LinearLayout.LayoutParams(46.dp(), 46.dp())
-            }
+            val btnMinus = Button(this).apply { text = "-"; layoutParams = LinearLayout.LayoutParams(45.dp(), 45.dp()) }
+            val btnPlus = Button(this).apply { text = "+"; layoutParams = LinearLayout.LayoutParams(45.dp(), 45.dp()) }
 
-            minusButton.setOnClickListener {
+            btnMinus.setOnClickListener {
                 val current = selectedPositions[positionName] ?: 0
                 if (current > 0) {
-                    val newValue = current - 1
-                    selectedPositions[positionName] = newValue
-                    countText.text = newValue.toString()
+                    selectedPositions[positionName] = current - 1
+                    countText.text = selectedPositions[positionName].toString()
                     updateMissingPeopleText()
                 }
             }
 
-            plusButton.setOnClickListener {
+            btnPlus.setOnClickListener {
                 val current = selectedPositions[positionName] ?: 0
-                val newValue = current + 1
-                selectedPositions[positionName] = newValue
-                countText.text = newValue.toString()
+                selectedPositions[positionName] = current + 1
+                countText.text = selectedPositions[positionName].toString()
                 updateMissingPeopleText()
             }
 
-            row.addView(label)
-            row.addView(minusButton)
-            row.addView(countText)
-            row.addView(plusButton)
-
+            row.addView(label); row.addView(btnMinus); row.addView(countText); row.addView(btnPlus)
             layoutPositionsContainer.addView(row)
         }
-
         updateMissingPeopleText()
     }
 
     private fun updateMissingPeopleText() {
-        val total = selectedPositions.values.sum()
-        tvMissingPeopleCount.text = "Missing people: $total"
+        tvMissingPeopleCount.text = "Missing people: ${selectedPositions.values.sum()}"
     }
 
     private fun saveMatch(
         location: String,
+        lat: Double,
+        lng: Double,
         dateTime: String,
         sport: String,
         level: String,
-        positions: Map<String, Int>,
-        createButton: Button
+        positions: Map<String, Int>
     ) {
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            Toast.makeText(this, "Session expired", Toast.LENGTH_SHORT).show()
-            return
-        }
-
+        val currentUser = auth.currentUser ?: return
         createButton.isEnabled = false
 
-        val missingPeople = positions.values.sum()
         val matchRef = db.collection("matches").document()
+        val totalNeeded = positions.values.sum()
 
         val match = CreatedMatch(
             id = matchRef.id,
             ownerId = currentUser.uid,
             location = location,
+            latitude = lat,       // Added for filtering
+            longitude = lng,      // Added for filtering
             dateTime = dateTime,
             sport = sport,
             level = level,
-            totalPlayers = missingPeople + 1,
+            totalPlayers = totalNeeded + 1,
             currentPlayers = 1,
-            pendingRequests = 0,
             createdAt = System.currentTimeMillis(),
             positions = positions.mapValues { it.value.toLong() }
         )
@@ -259,18 +179,11 @@ class CreateMatchStep2Activity : AppCompatActivity() {
                 startActivity(Intent(this, HistoryActivity::class.java))
                 finish()
             }
-            .addOnFailureListener { e ->
+            .addOnFailureListener {
                 createButton.isEnabled = true
-                Toast.makeText(
-                    this,
-                    "Error creating match: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
-
-    private fun Int.dp(): Int {
-        return (this * resources.displayMetrics.density).toInt()
-    }
+    private fun Int.dp(): Int = (this * resources.displayMetrics.density).toInt()
 }

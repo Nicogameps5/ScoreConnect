@@ -22,6 +22,9 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var etDateTime: EditText
     private var googleMap: GoogleMap? = null
 
+    // Variable to store the selected coordinates
+    private var selectedLatLng: LatLng? = null
+
     private val calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,14 +50,17 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
             val location = etLocation.text.toString().trim()
             val dateTime = etDateTime.text.toString().trim()
 
-            if (location.isEmpty() || dateTime.isEmpty()) {
-                Toast.makeText(this, "Complete location and date", Toast.LENGTH_SHORT).show()
+            if (location.isEmpty() || dateTime.isEmpty() || selectedLatLng == null) {
+                Toast.makeText(this, "Please select a location on the map and a date", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             val intent = Intent(this, CreateMatchStep2Activity::class.java)
             intent.putExtra("location", location)
             intent.putExtra("dateTime", dateTime)
+            // Pass coordinates for future filtering
+            intent.putExtra("latitude", selectedLatLng?.latitude ?: 0.0)
+            intent.putExtra("longitude", selectedLatLng?.longitude ?: 0.0)
             startActivity(intent)
         }
     }
@@ -65,10 +71,9 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
         googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12f))
 
         googleMap?.setOnMapClickListener { latLng ->
+            selectedLatLng = latLng
             googleMap?.clear()
-
-            googleMap?.addMarker(MarkerOptions().position(latLng).title("Match venue"))
-
+            googleMap?.addMarker(MarkerOptions().position(latLng).title("Match Venue"))
             googleMap?.animateCamera(CameraUpdateFactory.newLatLng(latLng))
             getAddressFromCoordinates(latLng)
         }
@@ -82,15 +87,13 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
             if (!addresses.isNullOrEmpty()) {
                 val address = addresses[0]
                 val addressText = address.getAddressLine(0)
-
                 etLocation.setText(addressText)
             } else {
-                Toast.makeText(this, "No address found for this place", Toast.LENGTH_SHORT).show()
+                etLocation.setText("${latLng.latitude}, ${latLng.longitude}")
             }
         } catch (e: Exception) {
             e.printStackTrace()
             etLocation.setText("${latLng.latitude}, ${latLng.longitude}")
-            Toast.makeText(this, "Error getting address", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -102,16 +105,13 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
         val datePicker = DatePickerDialog(
             this,
             { _, selectedYear, selectedMonth, selectedDay ->
-
                 calendar.set(Calendar.YEAR, selectedYear)
                 calendar.set(Calendar.MONTH, selectedMonth)
                 calendar.set(Calendar.DAY_OF_MONTH, selectedDay)
-
                 showTimePicker()
             },
             year, month, day
         )
-
         datePicker.datePicker.minDate = System.currentTimeMillis()
         datePicker.show()
     }
@@ -120,21 +120,11 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
         val minute = calendar.get(Calendar.MINUTE)
 
-        val timePicker = TimePickerDialog(
-            this,
-            { _, selectedHour, selectedMinute ->
-
-                calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
-                calendar.set(Calendar.MINUTE, selectedMinute)
-
-                updateDateTimeField()
-            },
-            hour,
-            minute,
-            true
-        )
-
-        timePicker.show()
+        TimePickerDialog(this, { _, selectedHour, selectedMinute ->
+            calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
+            calendar.set(Calendar.MINUTE, selectedMinute)
+            updateDateTimeField()
+        }, hour, minute, true).show()
     }
 
     private fun updateDateTimeField() {
