@@ -34,6 +34,7 @@ class MatchResultAdapter(
 
     inner class MatchViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val sport: TextView = itemView.findViewById(R.id.tvSport)
+        private val creatorUsername: TextView = itemView.findViewById(R.id.tvCreatorUsername)
         private val level: TextView = itemView.findViewById(R.id.tvLevel)
         private val date: TextView = itemView.findViewById(R.id.tvDate)
         private val location: TextView = itemView.findViewById(R.id.tvLocation)
@@ -43,6 +44,7 @@ class MatchResultAdapter(
 
         fun bind(match: MatchResult) {
             sport.text = match.sport
+            creatorUsername.text = "Created by: ${match.creatorUsername}"
             level.text = "Level: ${match.level}"
             date.text = "Date: ${match.date}"
             location.text = "Location: ${match.location}"

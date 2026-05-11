@@ -29,7 +29,6 @@ class FindMatchFiltersActivity : AppCompatActivity(), OnMapReadyCallback {
         val tvRadiusValue = findViewById<TextView>(R.id.tvRadiusValue)
         val tvSelectedLocation = findViewById<TextView>(R.id.tvSelectedLocation)
 
-        // Setup Spinners
         val sports = listOf("Any", "Football", "Basketball", "Padel", "Tennis", "Volleyball", "Running")
         val levels = listOf("Any", "Beginner", "Intermediate", "Advanced")
 
@@ -40,11 +39,9 @@ class FindMatchFiltersActivity : AppCompatActivity(), OnMapReadyCallback {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
 
-        // Setup Map
         val mapFragment = supportFragmentManager.findFragmentById(R.id.filterMapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        // SeekBar Logic
         seekBarRadius.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 tvRadiusValue.text = if (progress == 0) "Any distance" else "$progress km"
@@ -61,7 +58,6 @@ class FindMatchFiltersActivity : AppCompatActivity(), OnMapReadyCallback {
             intent.putExtra("filterLevel", spinnerLevel.selectedItem.toString())
             intent.putExtra("filterRadius", seekBarRadius.progress.toDouble())
 
-            // Pass custom location from map
             intent.putExtra("customLat", selectedLat)
             intent.putExtra("customLng", selectedLng)
 

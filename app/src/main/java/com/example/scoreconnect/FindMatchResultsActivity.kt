@@ -45,7 +45,6 @@ class FindMatchResultsActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        // Get Filters
         filterSport = intent.getStringExtra("filterSport") ?: "Any"
         filterLevel = intent.getStringExtra("filterLevel") ?: "Any"
         filterRadius = intent.getDoubleExtra("filterRadius", 50.0)
@@ -71,13 +70,11 @@ class FindMatchResultsActivity : AppCompatActivity() {
     }
 
     private fun checkLocationLogic() {
-        // PRIORYTET: Jeśli użytkownik wybrał punkt na mapie
         if (customLat != 0.0 && customLng != 0.0) {
             userLat = customLat
             userLng = customLng
             loadMatches()
         }
-        // BACKUP: Jeśli mapa pusta, prosimy o GPS urządzenia
         else {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQ_CODE)
@@ -92,7 +89,7 @@ class FindMatchResultsActivity : AppCompatActivity() {
         if (requestCode == LOCATION_PERMISSION_REQ_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             fetchDeviceLocation()
         } else {
-            loadMatches() // Load without distance if permission denied
+            loadMatches()
         }
     }
 
@@ -109,52 +106,294 @@ class FindMatchResultsActivity : AppCompatActivity() {
     }
 
     private fun loadMatches() {
+        data class MatchCandidate(
+            val id: String,
+            val creatorId: String,
+            val sport: String,
+            val level: String,
+            val date: String,
+            val positionNeeded: String,
+            val location: String,
+            val occupation: String,
+            val availablePositions: List<String>
+        )
+
         val currentUid = auth.currentUser?.uid.orEmpty()
 
-        db.collection("matches").get().addOnSuccessListener { result ->
-            val matches = result.documents.mapNotNull { document ->
-                val sport = document.getString("sport").orEmpty()
-                val level = document.getString("level").orEmpty()
-                val ownerId = document.getString("ownerId") ?: document.getString("creatorId") ?: ""
-                val mLat = document.getDouble("latitude") ?: 0.0
-                val mLng = document.getDouble("longitude") ?: 0.0
+        db.collection("matches")
+            .get()
+            .addOnSuccessListener { result ->
 
-                var isWithinRange = true
-                if (filterRadius > 0.0) {
-                    // Ignorujemy mecze bez lokalizacji jeśli filtr jest aktywny
-                    if (mLat == 0.0 || mLng == 0.0) {
-                        isWithinRange = false
-                    } else if (userLat != null && userLng != null) {
-                        val results = FloatArray(1)
-                        Location.distanceBetween(userLat!!, userLng!!, mLat, mLng, results)
-                        isWithinRange = (results[0] / 1000) <= filterRadius
+                val candidates = result.documents.mapNotNull { document ->
+                    val sport = document.getString("sport").orEmpty()
+                    val level = document.getString("level").orEmpty()
+
+                    val ownerId = document.getString("ownerId")
+                        ?: document.getString("creatorId")
+                        ?: ""
+
+                    // Si el partido no tiene creador válido, lo ignoramos para evitar crash
+                    if (ownerId.isBlank()) {
+                        return@mapNotNull null
+                    }
+
+                    val latValue = document.get("latitude")
+                    val lngValue = document.get("longitude")
+
+                    val mLat = when (latValue) {
+                        is Number -> latValue.toDouble()
+                        is String -> latValue.toDoubleOrNull() ?: 0.0
+                        else -> 0.0
+                    }
+
+                    val mLng = when (lngValue) {
+                        is Number -> lngValue.toDouble()
+                        is String -> lngValue.toDoubleOrNull() ?: 0.0
+                        else -> 0.0
+                    }
+
+                    val currentPlayers = (document.getLong("currentPlayers") ?: 1L).toInt()
+                    val totalPlayers = (document.getLong("totalPlayers") ?: 1L).toInt()
+                    val hasFreeSpace = currentPlayers < totalPlayers
+
+                    var isWithinRange = true
+
+                    if (filterRadius > 0.0) {
+                        if (mLat == 0.0 || mLng == 0.0) {
+                            isWithinRange = false
+                        } else if (userLat != null && userLng != null) {
+                            val results = FloatArray(1)
+                            Location.distanceBetween(userLat!!, userLng!!, mLat, mLng, results)
+                            isWithinRange = (results[0] / 1000) <= filterRadius
+                        } else {
+                            isWithinRange = false
+                        }
+                    }
+
+                    val rawPositions = document.get("positions") as? Map<*, *>
+
+                    val availablePositions = rawPositions
+                        ?.filterValues { value ->
+                            ((value as? Number)?.toInt() ?: 0) > 0
+                        }
+                        ?.keys
+                        ?.map { it.toString() }
+                        ?: listOf("Player")
+
+                    val positionsText = if (rawPositions.isNullOrEmpty()) {
+                        "Player"
                     } else {
-                        isWithinRange = false // Nie mamy lokalizacji usera a filtr jest włączony
+                        rawPositions.entries
+                            .filter { entry ->
+                                ((entry.value as? Number)?.toInt() ?: 0) > 0
+                            }
+                            .joinToString(", ") { entry ->
+                                "${entry.key} x${(entry.value as? Number)?.toInt() ?: 0}"
+                            }
+                    }
+
+                    if (
+                        (filterSport == "Any" || sport == filterSport) &&
+                        (filterLevel == "Any" || level == filterLevel) &&
+                        ownerId != currentUid &&
+                        isWithinRange &&
+                        hasFreeSpace
+                    ) {
+                        MatchCandidate(
+                            id = document.id,
+                            creatorId = ownerId,
+                            sport = sport,
+                            level = level,
+                            date = document.getString("dateTime") ?: "",
+                            positionNeeded = positionsText,
+                            location = document.getString("location").orEmpty(),
+                            occupation = "$currentPlayers/$totalPlayers players",
+                            availablePositions = availablePositions
+                        )
+                    } else {
+                        null
                     }
                 }
 
-                if ((filterSport == "Any" || sport == filterSport) &&
-                    (filterLevel == "Any" || level == filterLevel) &&
-                    ownerId != currentUid && isWithinRange) {
+                if (candidates.isEmpty()) {
+                    adapter.updateItems(emptyList())
+                    findViewById<TextView>(R.id.tvEmptyMatches).visibility = android.view.View.VISIBLE
+                    return@addOnSuccessListener
+                }
 
-                    // Create MatchResult object (skrócone dla czytelności)
-                    MatchResult(
-                        id = document.id,
-                        creatorId = ownerId,
-                        sport = sport,
-                        level = level,
-                        date = document.getString("dateTime") ?: "",
-                        positionNeeded = "Check details",
-                        location = document.getString("location").orEmpty(),
-                        occupation = "${document.getLong("currentPlayers") ?: 0}/${document.getLong("totalPlayers") ?: 0}",
-                        availablePositions = emptyList()
-                    )
-                } else null
+                val matches = mutableListOf<MatchResult>()
+                var remaining = candidates.size
+
+                fun finishOne() {
+                    remaining--
+
+                    if (remaining == 0) {
+                        adapter.updateItems(matches)
+                        findViewById<TextView>(R.id.tvEmptyMatches).visibility =
+                            if (matches.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
+                    }
+                }
+
+                candidates.forEach { candidate ->
+                    db.collection("users")
+                        .document(candidate.creatorId)
+                        .get()
+                        .addOnSuccessListener { userDoc ->
+                            val creatorUsername = userDoc.getString("username")
+                                ?.takeIf { it.isNotBlank() }
+                                ?: userDoc.getString("email")
+                                ?: "Unknown user"
+
+                            matches.add(
+                                MatchResult(
+                                    id = candidate.id,
+                                    creatorId = candidate.creatorId,
+                                    creatorUsername = creatorUsername,
+                                    sport = candidate.sport,
+                                    level = candidate.level,
+                                    date = candidate.date,
+                                    positionNeeded = candidate.positionNeeded,
+                                    location = candidate.location,
+                                    occupation = candidate.occupation,
+                                    availablePositions = candidate.availablePositions
+                                )
+                            )
+
+                            finishOne()
+                        }
+                        .addOnFailureListener {
+                            matches.add(
+                                MatchResult(
+                                    id = candidate.id,
+                                    creatorId = candidate.creatorId,
+                                    creatorUsername = "Unknown user",
+                                    sport = candidate.sport,
+                                    level = candidate.level,
+                                    date = candidate.date,
+                                    positionNeeded = candidate.positionNeeded,
+                                    location = candidate.location,
+                                    occupation = candidate.occupation,
+                                    availablePositions = candidate.availablePositions
+                                )
+                            )
+
+                            finishOne()
+                        }
+                }
             }
-            adapter.updateItems(matches)
-            findViewById<TextView>(R.id.tvEmptyMatches).visibility = if (matches.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
-        }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    this,
+                    "Error loading matches: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
     }
 
-    private fun openJoinDialog(result: MatchResult) { /* Logika dołączania (taka jak wcześniej) */ }
+    private fun openJoinDialog(result: MatchResult) {
+        val positions = result.availablePositions.ifEmpty {
+            listOf("Player")
+        }
+
+        if (positions.size == 1) {
+            submitJoinRequest(result, positions.first())
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Choose position")
+            .setItems(positions.toTypedArray()) { _, which ->
+                submitJoinRequest(result, positions[which])
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun submitJoinRequest(result: MatchResult, selectedPosition: String) {
+        val currentUser = auth.currentUser
+
+        if (currentUser == null) {
+            Toast.makeText(this, "You need to log in again", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (result.creatorId == currentUser.uid) {
+            Toast.makeText(this, "You cannot join your own match", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val matchRef = db.collection("matches").document(result.id)
+
+        matchRef.collection("requests")
+            .whereEqualTo("requesterId", currentUser.uid)
+            .get()
+            .addOnSuccessListener { existingRequests ->
+                val alreadyRequested = existingRequests.documents.any { document ->
+                    val status = document.getString("status") ?: "pending"
+                    status == "pending" || status == "accepted"
+                }
+
+                if (alreadyRequested) {
+                    Toast.makeText(
+                        this,
+                        "You already requested to join this match",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@addOnSuccessListener
+                }
+
+                db.collection("users")
+                    .document(currentUser.uid)
+                    .get()
+                    .addOnSuccessListener { userDoc ->
+                        val username = userDoc.getString("username")
+                            ?.takeIf { it.isNotBlank() }
+                            ?: currentUser.email.orEmpty()
+
+                        val requestRef = matchRef.collection("requests").document()
+
+                        val waitingPlayer = WaitingPlayer(
+                            id = requestRef.id,
+                            requesterId = currentUser.uid,
+                            position = selectedPosition,
+                            name = username,
+                            status = "pending"
+                        )
+
+                        val batch = db.batch()
+                        batch.set(requestRef, waitingPlayer)
+                        batch.update(matchRef, "pendingRequests", FieldValue.increment(1))
+
+                        batch.commit()
+                            .addOnSuccessListener {
+                                Toast.makeText(
+                                    this,
+                                    "Join request sent for $selectedPosition",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(
+                                    this,
+                                    "Error sending request: ${e.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(
+                            this,
+                            "Error loading user profile: ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    this,
+                    "Could not verify previous requests: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+    }
 }

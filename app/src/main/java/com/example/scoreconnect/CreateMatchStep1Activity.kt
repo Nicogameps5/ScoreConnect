@@ -22,7 +22,6 @@ class CreateMatchStep1Activity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var etDateTime: EditText
     private var googleMap: GoogleMap? = null
 
-    // Variable to store the selected coordinates
     private var selectedLatLng: LatLng? = null
 
     private val calendar = Calendar.getInstance()
